@@ -282,45 +282,47 @@ export const CharmDetail = () => {
           console.log('Chart render check - price_history exists:', charm?.price_history ? 'yes' : 'no');
           console.log('Chart render check - price_history length:', charm?.price_history?.length);
           return charm.price_history && charm.price_history.length > 0 ? (
-            <div className="mb-16 bg-white p-8" style={{ border: '1px solid #e5e5e5', borderRadius: '0px' }}>
+            <div className="mb-16 bg-white p-8" style={{ border: '2px solid #c9a94d', borderRadius: '0px', minHeight: '500px' }}>
               <h2 className="heading-2 mb-6">Price History (Last 30 Days)</h2>
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={formatPriceHistory(charm.price_history)} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-                  <XAxis 
-                    dataKey="date" 
-                    stroke="#666666" 
-                    style={{ fontSize: '12px' }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                  />
-                  <YAxis 
-                    stroke="#666666" 
-                    style={{ fontSize: '12px' }}
-                    domain={['dataMin - 5', 'dataMax + 5']}
-                    tickFormatter={(value) => `$${value.toFixed(0)}`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: '#ffffff',
-                      border: '1px solid #bcbcbc',
-                      borderRadius: '0px',
-                      padding: '8px 12px'
-                    }}
-                    formatter={(value) => [`$${value.toFixed(2)}`, 'Price']}
-                    labelStyle={{ color: '#333333', fontWeight: '600', marginBottom: '4px' }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="price"
-                    stroke="#c9a94d"
-                    strokeWidth={2.5}
-                    dot={{ fill: '#c9a94d', r: 4 }}
-                    activeDot={{ r: 6, stroke: '#c9a94d', strokeWidth: 2, fill: '#ffffff' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <div style={{ width: '100%', height: '400px', background: '#fafafa' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={formatPriceHistory(charm.price_history)} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                    <XAxis 
+                      dataKey="date" 
+                      stroke="#666666" 
+                      style={{ fontSize: '12px' }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={70}
+                    />
+                    <YAxis 
+                      stroke="#666666" 
+                      style={{ fontSize: '12px' }}
+                      domain={['auto', 'auto']}
+                      tickFormatter={(value) => `$${value.toFixed(0)}`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: '#ffffff',
+                        border: '1px solid #bcbcbc',
+                        borderRadius: '0px',
+                        padding: '8px 12px'
+                      }}
+                      formatter={(value) => [`$${parseFloat(value).toFixed(2)}`, 'Price']}
+                      labelStyle={{ color: '#333333', fontWeight: '600', marginBottom: '4px' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="price"
+                      stroke="#c9a94d"
+                      strokeWidth={3}
+                      dot={{ fill: '#c9a94d', r: 4 }}
+                      activeDot={{ r: 6, stroke: '#c9a94d', strokeWidth: 2, fill: '#ffffff' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
               <p className="text-center mt-4 body-small" style={{ color: '#999999' }}>
                 Showing price trends over the last 30 days from multiple marketplaces
               </p>
