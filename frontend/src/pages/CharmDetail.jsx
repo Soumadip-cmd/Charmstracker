@@ -299,13 +299,13 @@ export const CharmDetail = () => {
         </div>
 
         {/* Price History Chart */}
-        {charm.price_history && charm.price_history.length > 0 ? (
-          <div className="mb-16 bg-white p-8" style={{ border: '2px solid #c9a94d', borderRadius: '0px', minHeight: '500px' }}>
+        {chartData.length > 0 && (
+          <div className="mb-16 bg-white p-8" style={{ border: '2px solid #c9a94d', borderRadius: '0px' }}>
             <h2 className="heading-2 mb-6">Price History (Last 30 Days)</h2>
             <div style={{ width: '100%', height: '400px' }}>
               <ResponsiveContainer>
                 <LineChart 
-                  data={formatPriceHistory(charm.price_history)} 
+                  data={chartData} 
                   margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
@@ -347,7 +347,7 @@ export const CharmDetail = () => {
               Showing price trends over the last 30 days from multiple marketplaces
             </p>
           </div>
-        ) : null}
+        )}
 
         {/* Active Listings */}
         {charm.listings && charm.listings.length > 0 && (
