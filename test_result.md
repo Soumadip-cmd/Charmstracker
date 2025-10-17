@@ -101,3 +101,135 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Complete Milestone 2 for CharmTracker.com - Add backend integration, database seeding, and live data table with 20 rows on homepage plus full Market page"
+
+backend:
+  - task: "Setup FastAPI backend with MongoDB"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Backend already fully configured with FastAPI, MongoDB Motor, CORS middleware, and proper routing structure"
+  
+  - task: "Create Charm and Market API routes"
+    implemented: true
+    working: true
+    file: "backend/routes/charms.py, backend/routes/market.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "API routes implemented: GET /api/charms (with filtering/sorting/pagination), GET /api/charms/:id, GET /api/trending, GET /api/market-overview"
+  
+  - task: "Define MongoDB schemas and models"
+    implemented: true
+    working: true
+    file: "backend/models/charm.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Pydantic models created: Charm, CharmCreate, CharmResponse, CharmListResponse, MarketOverview with proper field types"
+  
+  - task: "Seed database with sample charm data"
+    implemented: true
+    working: true
+    file: "backend/seed_data.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Successfully seeded 20 charms with realistic data including price history, listings, and market trends. Output: 10 Active, 10 Retired, avg price $94.09"
+
+frontend:
+  - task: "Create API service layer"
+    implemented: true
+    working: true
+    file: "frontend/src/services/api.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "API service created with axios methods: getAllCharms, getCharmById, getTrending, getMarketOverview. Uses REACT_APP_BACKEND_URL from .env"
+  
+  - task: "Update DiscoverMarket component to use live API"
+    implemented: true
+    working: true
+    file: "frontend/src/components/DiscoverMarket.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Component already fetching from /api/trending endpoint. Shows 6 trending charms with loading skeleton. Uses real data from backend"
+  
+  - task: "Create MarketDataTable component with 20 rows"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/MarketDataTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW component created - displays 20 charms in table format with columns: Thumbnail, Name, Avg Price, 7d Change, Status, Material, Popularity. Includes 'See All' button to /browse. Horizontally scrollable on mobile with visual hint. Matches luxury aesthetic with sharp edges, gold/silver accents"
+  
+  - task: "Add MarketDataTable to landing page"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added MarketDataTable component between DiscoverMarket and WhyCollectors sections on landing page"
+  
+  - task: "Implement full Market page (Browse)"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/Browse.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Browse page already fully implemented with: search by name, sort by (popularity/price/name), filter by (material/status/price range), pagination, real-time API data. This serves as the full Market page"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "MarketDataTable component rendering on homepage"
+    - "API endpoints returning correct data"
+    - "Browse page (Market page) functionality"
+    - "Responsive design on mobile/tablet/desktop"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Milestone 2 implementation complete. Backend API is running with seeded database (20 charms). New MarketDataTable component added to homepage showing live data in table format with 20 rows. Browse page serves as full Market page with sorting/filtering/pagination. Ready for backend testing first, then frontend testing."
