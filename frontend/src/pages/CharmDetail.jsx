@@ -55,12 +55,24 @@ export const CharmDetail = () => {
   };
 
   const formatPriceHistory = (history) => {
+    if (!history || history.length === 0) return [];
     // Take last 30 days
     const last30Days = history.slice(-30);
-    return last30Days.map(entry => ({
-      date: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      price: entry.price
-    }));
+    return last30Days.map(entry => {
+      const date = entry.date;
+      let dateStr;
+      if (typeof date === 'string') {
+        dateStr = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      } else if (date instanceof Date) {
+        dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      } else {
+        dateStr = 'Unknown';
+      }
+      return {
+        date: dateStr,
+        price: parseFloat(entry.price) || 0
+      };
+    });
   };
 
   if (loading) {
