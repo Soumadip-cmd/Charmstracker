@@ -4,6 +4,7 @@ import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { HowItWorks } from "./components/HowItWorks";
 import { DiscoverMarket } from "./components/DiscoverMarket";
+import { MarketDataTable } from "./components/MarketDataTable";
 import { WhyCollectors } from "./components/WhyCollectors";
 import { Footer } from "./components/Footer";
 import { Browse } from "./pages/Browse";
@@ -15,6 +16,7 @@ const LandingPage = () => (
     <Hero />
     <HowItWorks />
     <DiscoverMarket />
+    <MarketDataTable />
     <WhyCollectors />
   </>
 );
