@@ -58,10 +58,15 @@ export const CharmDetail = () => {
   };
 
   const formatPriceHistory = (history) => {
-    if (!history || history.length === 0) return [];
+    console.log('formatPriceHistory called with:', history);
+    if (!history || history.length === 0) {
+      console.log('No history data available');
+      return [];
+    }
     // Take last 30 days
     const last30Days = history.slice(-30);
-    return last30Days.map(entry => {
+    console.log('Last 30 days:', last30Days.length, 'entries');
+    const formatted = last30Days.map(entry => {
       const date = entry.date;
       let dateStr;
       if (typeof date === 'string') {
@@ -76,6 +81,8 @@ export const CharmDetail = () => {
         price: parseFloat(entry.price) || 0
       };
     });
+    console.log('Formatted data:', formatted);
+    return formatted;
   };
 
   if (loading) {
