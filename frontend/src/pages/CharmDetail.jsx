@@ -298,12 +298,11 @@ export const CharmDetail = () => {
           </div>
         </div>
 
-        {/* Price History Chart - DEBUG VERSION */}
-        <div className="mb-16 bg-white p-8" style={{ border: '2px solid #c9a94d', borderRadius: '0px' }}>
-          <h2 className="heading-2 mb-6">Price History (Last 30 Days)</h2>
-          <p className="mb-4 text-sm">Chart Data Length: {chartData ? chartData.length : 0}</p>
-          {chartData && chartData.length > 0 ? (
-            <div style={{ width: '100%', height: '400px', background: '#f0f0f0' }}>
+        {/* Price History Chart */}
+        {charm && charm.price_history && charm.price_history.length > 0 && (
+          <div className="mb-16 bg-white p-8" style={{ border: '2px solid #c9a94d', borderRadius: '0px' }}>
+            <h2 className="heading-2 mb-6">Price History (Last 30 Days)</h2>
+            <div style={{ width: '100%', height: '400px' }}>
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart 
                   data={chartData}
@@ -322,13 +321,11 @@ export const CharmDetail = () => {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          ) : (
-            <p className="text-red-600">No chart data available</p>
-          )}
-          <p className="text-center mt-4 body-small" style={{ color: '#999999' }}>
-            Showing price trends over the last 30 days from multiple marketplaces
-          </p>
-        </div>
+            <p className="text-center mt-4 body-small" style={{ color: '#999999' }}>
+              Showing price trends over the last 30 days from multiple marketplaces
+            </p>
+          </div>
+        )}
 
         {/* Active Listings */}
         {charm.listings && charm.listings.length > 0 && (
