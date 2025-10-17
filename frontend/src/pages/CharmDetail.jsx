@@ -24,7 +24,7 @@ export const CharmDetail = () => {
   }, [charm]);
 
   const fetchCharmDetail = async () => {
-    try:
+    try {
       setLoading(true);
       const data = await charmAPI.getCharmById(id);
       setCharm(data);
