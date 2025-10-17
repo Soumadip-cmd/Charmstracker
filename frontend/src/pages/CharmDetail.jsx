@@ -54,6 +54,32 @@ export const CharmDetail = () => {
     }
   };
 
+  const chartData = useMemo(() => {
+    if (!charm || !charm.price_history || charm.price_history.length === 0) return [];
+    
+    const last30Days = charm.price_history.slice(-30);
+    
+    return last30Days.map((entry, index) => {
+      let dateStr = `Day ${index + 1}`;
+      
+      try {
+        if (entry.date) {
+          const date = new Date(entry.date);
+          if (!isNaN(date.getTime())) {
+            dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          }
+        }
+      } catch (e) {
+        // Use fallback
+      }
+      
+      return {
+        date: dateStr,
+        price: Number(entry.price) || 0
+      };
+    });
+  }, [charm]);
+
   const formatPriceHistory = (history) => {
     if (!history || history.length === 0) return [];
     
