@@ -27,6 +27,9 @@ export const CharmDetail = () => {
     try {
       setLoading(true);
       const data = await charmAPI.getCharmById(id);
+      console.log('Charm data received:', data);
+      console.log('Price history:', data.price_history);
+      console.log('Price history length:', data.price_history ? data.price_history.length : 0);
       setCharm(data);
 
       // Fetch related charms
