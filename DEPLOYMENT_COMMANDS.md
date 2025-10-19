@@ -47,15 +47,14 @@ sudo systemctl status mongod
 ## 3. Setup Application Directory
 
 ```bash
-# Create application directory
-sudo mkdir -p /var/www/charmstracker
-cd /var/www/charmstracker
+# Your application is already at: /root/Charmstracker
+cd /root/Charmstracker
 
-# Clone your repository (or upload files via SCP/FTP)
-git clone https://github.com/carefreelixe-cmd/Charmstracker.git .
+# If you need to clone fresh:
+# git clone https://github.com/carefreelixe-cmd/Charmstracker.git /root/Charmstracker
 
 # Or upload files manually using SCP from your local machine:
-# scp -r D:\Charmstracker/* root@31.220.50.205:/var/www/charmstracker/
+# scp -r D:\Charmstracker/* root@31.220.50.205:/root/Charmstracker/
 ```
 
 ---
