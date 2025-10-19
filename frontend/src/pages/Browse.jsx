@@ -86,9 +86,9 @@ export const Browse = () => {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="heading-1 mb-4">Browse All Charms</h1>
+          <h1 className="heading-1 mb-4">Browse Individual Charms</h1>
           <p className="body-regular" style={{ color: '#666666' }}>
-            Explore our complete collection of James Avery charms with real-time market data.
+            Explore our complete collection of individual James Avery silver and gold charms with real-time market pricing data.
           </p>
         </div>
 
@@ -175,7 +175,6 @@ export const Browse = () => {
                     <option value="">All Materials</option>
                     <option value="Silver">Silver</option>
                     <option value="Gold">Gold</option>
-                    <option value="Mixed">Mixed</option>
                   </select>
                 </div>
 

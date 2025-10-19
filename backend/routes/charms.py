@@ -23,7 +23,7 @@ def get_database():
 @router.get("", response_model=dict)
 async def get_all_charms(
     sort: Optional[str] = Query("popularity", regex="^(price_asc|price_desc|popularity|name)$"),
-    material: Optional[str] = Query(None, regex="^(Silver|Gold|Mixed)$"),
+    material: Optional[str] = Query(None, regex="^(Silver|Gold)$"),
     status: Optional[str] = Query(None, regex="^(Active|Retired)$"),
     min_price: Optional[float] = Query(None, ge=0),
     max_price: Optional[float] = Query(None, ge=0),

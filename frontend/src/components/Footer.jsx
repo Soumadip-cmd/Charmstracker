@@ -29,7 +29,7 @@ export const Footer = () => {
               className="h-10 w-auto mb-4"
             />
             <p className="body-small" style={{ color: '#666666' }}>
-              Real market data for James Avery charm collectors.
+              Real market data for individual James Avery silver and gold charm collectors.
             </p>
           </div>
 
