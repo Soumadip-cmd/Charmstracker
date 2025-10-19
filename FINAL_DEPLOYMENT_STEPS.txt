@@ -22,9 +22,9 @@ source venv/bin/activate && \
 pip install -r requirements.txt && \
 deactivate && \
 cat > /root/Charmstracker/backend/.env << 'EOF'
-MONGO_URL=mongodb://localhost:27017/
-DB_NAME=charmstracker
-CORS_ORIGINS=http://charmstracker.com,http://www.charmstracker.com,https://charmstracker.com,https://www.charmstracker.com,http://31.220.50.205
+MONGO_URL="mongodb+srv://carefreelixe_db_user:d9po0rKPJwchyCBE@laundry.bhx3jw0.mongodb.net/?retryWrites=true&w=majority"
+DB_NAME="charmtracker_production"
+CORS_ORIGINS="http://charmstracker.com,http://www.charmstracker.com,https://charmstracker.com,https://www.charmstracker.com,http://31.220.50.205"
 EOF
 
 cp /root/Charmstracker/charmstracker-api.service /etc/systemd/system/ && \
