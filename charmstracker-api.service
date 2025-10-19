@@ -1,0 +1,16 @@
+[Unit]
+Description=CharmTracker FastAPI Application
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/Charmstracker
+Environment="PATH=/root/Charmstracker/backend/venv/bin"
+ExecStart=/root/Charmstracker/backend/venv/bin/uvicorn backend.server:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
