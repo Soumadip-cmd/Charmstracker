@@ -175,7 +175,6 @@ export const Browse = () => {
                     <option value="">All Materials</option>
                     <option value="Silver">Silver</option>
                     <option value="Gold">Gold</option>
-                    <option value="Mixed">Mixed</option>
                   </select>
                 </div>
 
