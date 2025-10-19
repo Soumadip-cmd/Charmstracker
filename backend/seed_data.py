@@ -49,7 +49,7 @@ DESCRIPTIONS = [
     "Artisan-quality charm with exquisite detailing and fine materials.",
 ]
 
-MATERIALS = ["Silver", "Gold", "Mixed"]
+MATERIALS = ["Silver", "Gold"]
 STATUSES = ["Active", "Retired"]
 
 # Image URLs from vision expert agent
