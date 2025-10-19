@@ -28,13 +28,13 @@ export const Hero = () => {
         <div className="max-w-4xl mx-auto">
           {/* Main Headline */}
           <h1 className="hero-large text-center mb-6 animate-fade-in">
-            Track the Real Market Value of Every James Avery Charm
+            Track the Real Market Value of Individual James Avery Charms
           </h1>
 
           {/* Subheadline */}
           <p className="body-large text-center mb-12 max-w-3xl mx-auto" style={{ color: '#666666' }}>
-            CharmTracker aggregates prices from eBay, Poshmark, and more — helping
-            collectors discover true market value instantly.
+            CharmTracker aggregates prices for individual silver and gold charms from eBay, Poshmark, Etsy, and more — helping
+            collectors discover true market value for single charm pieces instantly.
           </p>
 
           {/* CTA Buttons */}
