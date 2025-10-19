@@ -11,8 +11,8 @@ import uuid
 from datetime import datetime, timezone
 
 # Import routes
-from routes.charms import router as charms_router
-from routes.market import router as market_router
+from backend.routes.charms import router as charms_router
+from backend.routes.market import router as market_router
 
 
 ROOT_DIR = Path(__file__).parent
