@@ -23,7 +23,7 @@ class Charm(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
-    material: str  # "Silver", "Gold", "Mixed"
+    material: str  # "Silver" or "Gold" - Individual charms only
     status: str  # "Active", "Retired"
     is_retired: bool
     avg_price: float
