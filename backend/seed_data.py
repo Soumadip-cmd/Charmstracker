@@ -39,14 +39,14 @@ CHARM_NAMES = [
 ]
 
 DESCRIPTIONS = [
-    "Beautifully crafted charm with intricate details and timeless design.",
-    "A collector's favorite featuring elegant styling and exceptional quality.",
-    "Handcrafted with attention to detail, this charm is a true work of art.",
-    "Classic design that never goes out of style, perfect for any collection.",
-    "Limited edition piece with unique characteristics and premium finish.",
-    "Vintage-inspired charm with modern craftsmanship and durability.",
-    "Symbolic piece representing meaning and beauty in equal measure.",
-    "Artisan-quality charm with exquisite detailing and fine materials.",
+    "Individual charm perfect for adding to your bracelet collection.",
+    "Single decorative charm with intricate detailing, sold separately.",
+    "Standalone charm piece designed to attach to bracelets or necklaces.",
+    "Individual collectible charm with classic design and quality craftsmanship.",
+    "Single charm featuring unique design, ideal for charm bracelets.",
+    "Collectible individual charm with timeless appeal and fine detailing.",
+    "Standalone decorative charm piece with symbolic meaning.",
+    "Individual charm with artisan-quality craftsmanship and elegant design.",
 ]
 
 MATERIALS = ["Silver", "Gold"]
