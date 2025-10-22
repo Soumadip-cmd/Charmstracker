@@ -11,8 +11,12 @@ import uuid
 from datetime import datetime, timezone
 
 # Import routes
-from backend.routes.charms import router as charms_router
-from backend.routes.market import router as market_router
+from routes.charms import router as charms_router
+from routes.market import router as market_router
+from routes.scraper import router as scraper_router
+
+# Import scheduler
+from services.scheduler import start_scheduler, stop_scheduler
 
 
 ROOT_DIR = Path(__file__).parent
@@ -73,6 +77,7 @@ async def get_status_checks():
 # Include routers
 app.include_router(charms_router)
 app.include_router(market_router)
+app.include_router(scraper_router)
 app.include_router(api_router)
 
 app.add_middleware(
@@ -90,6 +95,25 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_event():
+    """Start background scheduler on app startup"""
+    try:
+        logger.info("Starting background scheduler...")
+        await start_scheduler(db)
+        logger.info("Background scheduler started successfully")
+    except Exception as e:
+        logger.error(f"Failed to start scheduler: {str(e)}")
+
 @app.on_event("shutdown")
-async def shutdown_db_client():
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    try:
+        logger.info("Stopping background scheduler...")
+        await stop_scheduler()
+        logger.info("Background scheduler stopped")
+    except Exception as e:
+        logger.error(f"Error stopping scheduler: {str(e)}")
+    
     client.close()
+    logger.info("MongoDB connection closed")

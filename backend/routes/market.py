@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from backend.models.charm import MarketOverview
+from  models.charm import MarketOverview
 from datetime import datetime
 import logging
 
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api", tags=["market"])
 
 # Database will be accessed from server.py
 def get_database():
-    from backend.server import db
+    from  server import db
     return db
 
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import Optional, List
-from backend.models.charm import (
+from models.charm import (
     Charm,
     CharmCreate,
     CharmResponse,
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/charms", tags=["charms"])
 
 # Database will be accessed from server.py
 def get_database():
-    from backend.server import db
+    from server import db
     return db
 
 
