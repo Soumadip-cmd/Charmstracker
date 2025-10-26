@@ -1,6 +1,7 @@
 /**
  * API Service for CharmTracker Frontend
  * Handles all API calls to the backend
+ * UPDATED: Added support for loading all charms dynamically
  */
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
@@ -36,6 +37,7 @@ async function apiFetch(endpoint, options = {}) {
 export const charmAPI = {
   /**
    * Get all charms with optional filters
+   * NEW: Supports load_all parameter to get ALL charms at once
    */
   getAllCharms: async (params = {}) => {
     const queryParams = new URLSearchParams();
@@ -48,6 +50,42 @@ export const charmAPI = {
 
     const endpoint = `/api/charms${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     return await apiFetch(endpoint);
+  },
+
+  /**
+   * NEW: Get ALL charms without pagination (recommended)
+   * This is the easiest way to load all charms at once
+   */
+  getAllCharmsNoPagination: async (filters = {}) => {
+    const params = {
+      ...filters,
+      load_all: true  // NEW: Load all charms
+    };
+    
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+        queryParams.append(key, params[key]);
+      }
+    });
+
+    const endpoint = `/api/charms?${queryParams.toString()}`;
+    return await apiFetch(endpoint);
+  },
+
+  /**
+   * NEW: Get charm statistics
+   */
+  getCharmCount: async () => {
+    return await apiFetch('/api/charms/count');
+  },
+
+  /**
+   * NEW: Search charms by name
+   */
+  searchCharms: async (query, limit = 20) => {
+    const encodedQuery = encodeURIComponent(query);
+    return await apiFetch(`/api/charms/search/name?query=${encodedQuery}&limit=${limit}`);
   },
 
   /**

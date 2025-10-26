@@ -28,11 +28,25 @@ async def get_all_charms(
     min_price: Optional[float] = Query(None, ge=0),
     max_price: Optional[float] = Query(None, ge=0),
     page: int = Query(1, ge=1),
-    limit: int = Query(20, ge=1, le=100),
+    limit: int = Query(100, ge=1, le=500),  # Increased max limit to 500
+    load_all: bool = Query(False)  # New parameter to load all charms
 ):
-    """Get all charms with filtering and sorting"""
+    """
+    Get all charms with filtering and sorting
+    
+    Parameters:
+    - sort: Sort order (price_asc, price_desc, popularity, name)
+    - material: Filter by material (Silver, Gold)
+    - status: Filter by status (Active, Retired)
+    - min_price: Minimum price filter
+    - max_price: Maximum price filter
+    - page: Page number (ignored if load_all=True)
+    - limit: Items per page (max 500, ignored if load_all=True)
+    - load_all: If True, returns all charms without pagination
+    """
     try:
         db = get_database()
+        
         # Build filter query
         filter_query = {}
         if material:
@@ -60,10 +74,18 @@ async def get_all_charms(
         # Get total count
         total = await db.charms.count_documents(filter_query)
 
-        # Get paginated results
-        skip = (page - 1) * limit
-        cursor = db.charms.find(filter_query).sort(list(sort_query.items())).skip(skip).limit(limit)
-        charms = await cursor.to_list(length=limit)
+        # Handle load_all parameter
+        if load_all:
+            # Load all charms without pagination
+            cursor = db.charms.find(filter_query).sort(list(sort_query.items()))
+            charms = await cursor.to_list(length=None)  # Load all
+            
+            logger.info(f"Loading all {len(charms)} charms")
+        else:
+            # Get paginated results
+            skip = (page - 1) * limit
+            cursor = db.charms.find(filter_query).sort(list(sort_query.items())).skip(skip).limit(limit)
+            charms = await cursor.to_list(length=limit)
 
         # Format response
         charm_list = [
@@ -81,17 +103,72 @@ async def get_all_charms(
             for charm in charms
         ]
 
-        return {
-            "charms": [charm.dict() for charm in charm_list],
-            "total": total,
-            "page": page,
-            "total_pages": (total + limit - 1) // limit,
-            "limit": limit,
-        }
+        if load_all:
+            return {
+                "charms": [charm.dict() for charm in charm_list],
+                "total": total,
+                "page": 1,
+                "total_pages": 1,
+                "limit": total,
+                "load_all": True
+            }
+        else:
+            return {
+                "charms": [charm.dict() for charm in charm_list],
+                "total": total,
+                "page": page,
+                "total_pages": (total + limit - 1) // limit,
+                "limit": limit,
+                "load_all": False
+            }
 
     except Exception as e:
         logger.error(f"Error fetching charms: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching charms: {str(e)}")
+
+
+@router.get("/count")
+async def get_charm_count():
+    """Get total number of charms in database"""
+    try:
+        db = get_database()
+        
+        total = await db.charms.count_documents({})
+        active = await db.charms.count_documents({"status": "Active"})
+        retired = await db.charms.count_documents({"status": "Retired"})
+        silver = await db.charms.count_documents({"material": "Silver"})
+        gold = await db.charms.count_documents({"material": "Gold"})
+        
+        return {
+            "total": total,
+            "active": active,
+            "retired": retired,
+            "silver": silver,
+            "gold": gold
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting charm count: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/all-ids")
+async def get_all_charm_ids():
+    """Get list of all charm IDs (lightweight endpoint)"""
+    try:
+        db = get_database()
+        
+        cursor = db.charms.find({}, {"id": 1, "name": 1, "_id": 0})
+        charms = await cursor.to_list(length=None)
+        
+        return {
+            "charm_ids": [{"id": c["id"], "name": c["name"]} for c in charms],
+            "total": len(charms)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting charm IDs: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{charm_id}", response_model=CharmResponse)
@@ -151,3 +228,43 @@ async def create_charm(charm: CharmCreate):
     except Exception as e:
         logger.error(f"Error creating charm: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error creating charm: {str(e)}")
+
+
+@router.get("/search/name")
+async def search_charms_by_name(
+    query: str = Query(..., min_length=1),
+    limit: int = Query(20, ge=1, le=100)
+):
+    """Search charms by name (case-insensitive partial match)"""
+    try:
+        db = get_database()
+        
+        # Use regex for case-insensitive partial matching
+        filter_query = {
+            "name": {"$regex": query, "$options": "i"}
+        }
+        
+        cursor = db.charms.find(filter_query).limit(limit)
+        charms = await cursor.to_list(length=limit)
+        
+        charm_list = [
+            {
+                "id": charm["id"],
+                "name": charm["name"],
+                "material": charm["material"],
+                "status": charm["status"],
+                "avg_price": charm["avg_price"],
+                "image": charm["images"][0] if charm["images"] else None
+            }
+            for charm in charms
+        ]
+        
+        return {
+            "results": charm_list,
+            "count": len(charm_list),
+            "query": query
+        }
+        
+    except Exception as e:
+        logger.error(f"Error searching charms: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

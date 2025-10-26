@@ -5,7 +5,8 @@ import { charmAPI } from '../services/api';
 
 export const Browse = () => {
   const navigate = useNavigate();
-  const [charms, setCharms] = useState([]);
+  const [allCharms, setAllCharms] = useState([]); // Store ALL charms
+  const [displayedCharms, setDisplayedCharms] = useState([]); // Charms to display after filtering
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     sort: 'popularity',
@@ -14,44 +15,37 @@ export const Browse = () => {
     minPrice: '',
     maxPrice: ''
   });
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 12,
-    total: 0,
-    totalPages: 0
-  });
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [stats, setStats] = useState({ total: 0, active: 0, retired: 0 });
 
+  // Load ALL charms on mount
   useEffect(() => {
-    fetchCharms();
-  }, [filters, pagination.page]);
+    fetchAllCharms();
+    fetchStats();
+  }, []);
 
-  const fetchCharms = async () => {
+  // Apply filters and search when they change
+  useEffect(() => {
+    applyFiltersAndSearch();
+  }, [filters, searchTerm, allCharms]);
+
+  /**
+   * Fetch ALL charms at once (no pagination)
+   */
+  const fetchAllCharms = async () => {
     try {
       setLoading(true);
-      const params = {
-        ...filters,
-        page: pagination.page,
-        limit: pagination.limit,
-        min_price: filters.minPrice || undefined,
-        max_price: filters.maxPrice || undefined
-      };
       
-      // Remove empty filters
-      Object.keys(params).forEach(key => {
-        if (params[key] === '' || params[key] === undefined) {
-          delete params[key];
-        }
+      // NEW: Use load_all=true to get ALL charms
+      const data = await charmAPI.getAllCharms({
+        load_all: true,  // This gets ALL charms
+        sort: filters.sort
       });
-
-      const data = await charmAPI.getAllCharms(params);
-      setCharms(data.charms);
-      setPagination(prev => ({
-        ...prev,
-        total: data.total,
-        totalPages: data.total_pages
-      }));
+      
+      console.log(`✅ Loaded ${data.charms.length} charms from database`);
+      setAllCharms(data.charms || []);
+      
     } catch (error) {
       console.error('Error fetching charms:', error);
     } finally {
@@ -59,9 +53,70 @@ export const Browse = () => {
     }
   };
 
+  /**
+   * Fetch charm statistics
+   */
+  const fetchStats = async () => {
+    try {
+      const data = await charmAPI.getCharmCount();
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  /**
+   * Apply filters and search CLIENT-SIDE (since we have all data)
+   */
+  const applyFiltersAndSearch = () => {
+    let filtered = [...allCharms];
+
+    // Apply search
+    if (searchTerm) {
+      filtered = filtered.filter(charm =>
+        charm.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply material filter
+    if (filters.material) {
+      filtered = filtered.filter(charm => charm.material === filters.material);
+    }
+
+    // Apply status filter
+    if (filters.status) {
+      filtered = filtered.filter(charm => charm.status === filters.status);
+    }
+
+    // Apply price filters
+    if (filters.minPrice) {
+      filtered = filtered.filter(charm => charm.avg_price >= parseFloat(filters.minPrice));
+    }
+    if (filters.maxPrice) {
+      filtered = filtered.filter(charm => charm.avg_price <= parseFloat(filters.maxPrice));
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (filters.sort) {
+        case 'price_asc':
+          return a.avg_price - b.avg_price;
+        case 'price_desc':
+          return b.avg_price - a.avg_price;
+        case 'popularity':
+          return b.popularity - a.popularity;
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    setDisplayedCharms(filtered);
+  };
+
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const clearFilters = () => {
@@ -72,14 +127,10 @@ export const Browse = () => {
       minPrice: '',
       maxPrice: ''
     });
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setSearchTerm('');
   };
 
-  const filteredCharms = charms.filter(charm =>
-    charm.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const hasActiveFilters = filters.material || filters.status || filters.minPrice || filters.maxPrice;
+  const hasActiveFilters = filters.material || filters.status || filters.minPrice || filters.maxPrice || searchTerm;
 
   return (
     <div className="min-h-screen pt-24 pb-16" style={{ background: '#f3f3f3' }}>
@@ -87,9 +138,15 @@ export const Browse = () => {
         {/* Header */}
         <div className="mb-12">
           <h1 className="heading-1 mb-4">Browse Individual Charms</h1>
-          <p className="body-regular" style={{ color: '#666666' }}>
-            Explore our complete collection of individual James Avery silver and gold charms with real-time market pricing data.
+          <p className="body-regular mb-4" style={{ color: '#666666' }}>
+            Explore our complete collection of {stats.total} individual James Avery silver and gold charms with real-time market pricing data.
           </p>
+          {/* Statistics */}
+          <div className="flex gap-6 text-sm" style={{ color: '#666666' }}>
+            <span><strong>{stats.total}</strong> Total Charms</span>
+            <span><strong>{stats.active}</strong> Active</span>
+            <span><strong>{stats.retired}</strong> Retired</span>
+          </div>
         </div>
 
         {/* Search and Filters */}
@@ -264,14 +321,15 @@ export const Browse = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="body-regular" style={{ color: '#666666' }}>
-            Showing {filteredCharms.length} of {pagination.total} charms
+            Showing <strong>{displayedCharms.length}</strong> of <strong>{allCharms.length}</strong> charms
+            {hasActiveFilters && <span> (filtered)</span>}
           </p>
         </div>
 
         {/* Charms Grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(12)].map((_, i) => (
               <div key={i} className="animate-pulse bg-white" style={{ borderRadius: '0px' }}>
                 <div className="h-64 bg-gray-200" />
                 <div className="p-4">
@@ -281,21 +339,38 @@ export const Browse = () => {
               </div>
             ))}
           </div>
-        ) : filteredCharms.length === 0 ? (
+        ) : displayedCharms.length === 0 ? (
           <div className="text-center py-16">
             <p className="heading-2 mb-4">No charms found</p>
-            <p className="body-regular" style={{ color: '#666666' }}>
-              Try adjusting your filters or search term
+            <p className="body-regular mb-6" style={{ color: '#666666' }}>
+              {hasActiveFilters 
+                ? 'Try adjusting your filters or search term' 
+                : 'No charms available in the database'}
             </p>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="px-6 py-3"
+                style={{
+                  background: '#c9a94d',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '0px',
+                  cursor: 'pointer'
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-            {filteredCharms.map((charm) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {displayedCharms.map((charm) => (
               <button
                 key={charm.id}
                 onClick={() => navigate(`/charm/${charm.id}`)}
                 className="bg-white overflow-hidden transition-smooth hover:shadow-lg text-left"
-                style={{ border: 'none', borderRadius: '0px' }}
+                style={{ border: 'none', borderRadius: '0px', cursor: 'pointer' }}
               >
                 <div className="w-full h-64 overflow-hidden">
                   <img
@@ -319,7 +394,7 @@ export const Browse = () => {
                       ) : (
                         <TrendingDown className="w-4 h-4" />
                       )}
-                      {Math.abs(charm.price_change_7d)}%
+                      {Math.abs(charm.price_change_7d).toFixed(1)}%
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-xs">
@@ -339,41 +414,6 @@ export const Browse = () => {
                 </div>
               </button>
             ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2">
-            <button
-              onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
-              disabled={pagination.page === 1}
-              className="px-6 py-3 transition-smooth disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                background: 'transparent',
-                border: '1px solid #333333',
-                borderRadius: '0px',
-                color: '#333333'
-              }}
-            >
-              Previous
-            </button>
-            <span className="px-4 body-regular" style={{ color: '#666666' }}>
-              Page {pagination.page} of {pagination.totalPages}
-            </span>
-            <button
-              onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
-              disabled={pagination.page === pagination.totalPages}
-              className="px-6 py-3 transition-smooth disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                background: 'transparent',
-                border: '1px solid #333333',
-                borderRadius: '0px',
-                color: '#333333'
-              }}
-            >
-              Next
-            </button>
           </div>
         )}
       </div>
